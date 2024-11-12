@@ -13,9 +13,26 @@ Resources:
   ImageGenFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://cara011bucket/35c23f59f77f8f3d5195ab4526e98c44
+      CodeUri: s3://cara011bucket/855e78ef8cec05e00997b1d8cc703a46
       Handler: app.lambda_handler
       Runtime: python3.8
+      Environment:
+        Variables:
+          S3_BUCKET: pgr301-couch-explorers
+          CANDIDATE_NR: '55'
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - Statement:
+          Effect: Allow
+          Action:
+          - s3:PutObject
+          Resource:
+          - arn:aws:s3:::pgr301-couch-explorers/55/*
+      - Statement:
+          Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          Resource: '*'
       Architectures:
       - x86_64
       Events:

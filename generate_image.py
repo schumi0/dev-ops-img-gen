@@ -10,13 +10,13 @@ s3_client = boto3.client("s3")
 
 # Define the model ID and S3 bucket name (replace with your actual bucket name)
 model_id = "amazon.titan-image-generator-v1"
-bucket_name = "cara011bucket"
+bucket_name = "pgr301-couch-explorers/"
 
 # Frank; Important; Change this prompt to something else before the presentation with the investors!
-prompt = "Investors, with circus hats, giving money to developers with large smiles"
+prompt = "a nice sunset with a dog in front"
 
 seed = random.randint(0, 2147483647)
-s3_image_path = f"generated_images/titan_{seed}.png"
+s3_image_path = f"generated_images/veryCool_{seed}.png"
 
 native_request = {
     "taskType": "TEXT_IMAGE",
