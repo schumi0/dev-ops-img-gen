@@ -24,7 +24,7 @@ jobs:
           aws-region: eu-west-1
       - name: Validate SAM Template
         run: |
-          sam validate
+          sam validate -t sam-app/template.yaml
       - name: Re-pack 
         run: |
           sam package -t sam-app/template.yaml --output-template-file lambda-pkgd.yaml --s3-bucket cara011bucket
