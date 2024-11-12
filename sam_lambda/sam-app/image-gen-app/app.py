@@ -17,9 +17,9 @@ tracer = Tracer()
 logger = Logger()
 metrics = Metrics(namespace="Powertools")
 
-@app.post("/generate_image")
+@app.post("/generate_image{prompt}")
 @tracer.capture_method
-def generate_image(prompt):
+def app_generate_image(prompt):
     payload = {"prompt": prompt}
     
     try:
@@ -30,3 +30,6 @@ def generate_image(prompt):
             response_data = response.json()
         else:
             print("failed")
+    
+    except Exception as e:
+        print("fail?")
