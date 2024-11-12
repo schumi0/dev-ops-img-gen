@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'sam-app
+
+  Sample SAM Template for sam-app
+
+  '
+Globals:
+  Function:
+    Timeout: 300
+    MemorySize: 128
+Resources:
+  ImageGenFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://cara011bucket/35c23f59f77f8f3d5195ab4526e98c44
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+      Events:
+        ImageGen:
+          Type: Api
+          Properties:
+            Path: /generate
+            Method: post
+    Metadata:
+      SamResourceId: ImageGenFunction
+Outputs:
+  ImageGenApi:
+    Description: API Gateway endpoint URL for Prod stage for Image Gen function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate/
+  ImageGenFunction:
+    Description: Image Gen Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - ImageGenFunction
+      - Arn
+  ImageGenIamRole:
+    Description: Implicit IAM Role created for Image Gen Function
+    Value:
+      Fn::GetAtt:
+      - ImageGenFunctionRole
+      - Arn
