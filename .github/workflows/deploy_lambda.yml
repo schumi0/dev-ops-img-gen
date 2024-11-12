@@ -27,7 +27,7 @@ jobs:
           sam validate
       - name: Re-pack 
         run: |
-          sam package -t template.yaml --output-template-file lambda-pkgd.yaml --s3-bucket cara011bucket
+          sam package -t ./template.yaml --output-template-file lambda-pkgd.yaml --s3-bucket cara011bucket
       - name: Deploy SAM application #<-------------------------------- 
         run: |
             sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-sentiment-CAR  --capabilities CAPABILITY_IAM --region eu-west-1
