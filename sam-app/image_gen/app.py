@@ -5,13 +5,9 @@ import base64
 import random
 # import requests
 
-
-
 bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
 s3_client = boto3.client("s3")
-
 bucket_name = os.getenv("S3_BUCKET")
-
 CANDIDATE_NR = "55"
 
 def lambda_handler(event, context):
