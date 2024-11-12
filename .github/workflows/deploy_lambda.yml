@@ -1,0 +1,33 @@
+name: Workflows with large secrets
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  my-job:
+  
+    name: My Job
+    
+    runs-on: ubuntu-latest #Amazon runs on linux right?!?!
+    
+    steps:
+      - name: checkout commit
+        uses: actions/checkout@v3
+
+      - name: AWS CLi
+        uses: aws-actions/configure-aws-credentials@v2 #v2? v4?
+        with:
+          aws-access-key-id: ${{ secrets.(AWS access key) }} #<-----------------------------
+          aws-secret-access-key: ${{ secrets.(AWS secret access key) }} #<-----------------------------
+          aws-region: ${{ secrets.(AWS region) }} #<-----------------------------
+      - name: Validate SAM Template
+        run: |
+          sam validate
+      - name: Re-pack 
+        run: |
+          sam package -t template.yaml --output-template-file lambda-pkgd.yaml --s3-bucket cara011bucket
+      - name: Deploy SAM application #<-------------------------------- 
+        run: |
+          sam deploy --no-confirm-changeset --stack-name lambda-deployment-stack --capabilities CAPABILITY_IAM 
