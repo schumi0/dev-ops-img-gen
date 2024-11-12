@@ -15,7 +15,7 @@ Resources:
   ImageGenFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: image_gen/app.py
+      CodeUri: ./sam-app/image_gen/app.py
       Handler: app.lambda_handler
       Runtime: python3.12
       Environment: 
