@@ -51,7 +51,7 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": "Success", "s3_path": f"{bucket_name} -> {s3_image_path}"})
+            "body": json.dumps({"message": f"Success with generating image using: {prompt}", "s3_path": f" {bucket_name} -> {s3_image_path}"})
         }
         
         
