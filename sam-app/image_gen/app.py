@@ -14,6 +14,7 @@ def lambda_handler(event, context):
     try:
         body = json.loads(event["body"])
         prompt = body.get("prompt", "empty prompt: generate a lion")
+
     except (json.JSONDecodeError, KeyError):
         return {
             "statusCode": 400,
@@ -41,19 +42,15 @@ def lambda_handler(event, context):
         response = bedrock_client.invoke_model(modelId="amazon.titan-image-generator-v1", body=json.dumps(native_request))
         model_response = json.loads(response["body"].read())
     
-    
-        # Extract and decode the Base64 image data
         base64_image_data = model_response["images"][0]
         image_data = base64.b64decode(base64_image_data)
         
-        # Upload the decoded image data to S3
         s3_client.put_object(Bucket=bucket_name, Key=s3_image_path, Body=image_data)
 
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": f"Success with generating image using: {prompt}", "s3_path": f" {bucket_name} -> {s3_image_path}"})
+            "body": json.dumps({"message": f"Success with generating image using: {prompt}", "s3_path": f"bucket: {bucket_name} -> {s3_image_path}"})
         }
-        
         
     except Exception as e:
         return {
