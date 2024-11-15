@@ -5,7 +5,6 @@ Description: >
 
   Sample SAM Template for sam-app
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 300
@@ -13,8 +12,7 @@ Globals:
 
 Resources:
   ImageGenFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
+    Type: AWS::Serverless::Function 
       CodeUri: ./sam-app/image_gen/app.py
       Handler: app.lambda_handler
       Runtime: python3.12
@@ -40,11 +38,12 @@ Resources:
         - x86_64
       Events:
         ImageGen:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
+          Type: Api 
             Path: /generate
             Method: post
 
+
+#Edited from the original SAM-app template generator
 Outputs:
   ImageGenApi:
     Description: "API Gateway endpoint URL for Prod stage for Image Gen function"

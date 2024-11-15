@@ -8,10 +8,9 @@ on:
 jobs:
   my-job:
   
-    name: My Job
+    name: App Deploy on Push
     
     runs-on: ubuntu-latest #Amazon runs on linux right?!?!
-    
     steps:
       - name: checkout commit
         uses: actions/checkout@v3
@@ -25,9 +24,9 @@ jobs:
       - name: Validate SAM Template
         run: |
           sam validate -t sam-app/template.yaml
-      - name: Re-pack 
+      - name: Re-pack SAM APP
         run: |
           sam package -t sam-app/template.yaml --output-template-file lambda-pkgd.yaml --s3-bucket cara011bucket
-      - name: Deploy SAM application #<-------------------------------- 
+      - name: Deploy SAM application
         run: |
             sam deploy -t sam-app/template.yaml --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-sentiment-CAR  --capabilities CAPABILITY_IAM --region eu-west-1

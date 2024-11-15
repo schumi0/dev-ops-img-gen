@@ -41,7 +41,7 @@ def lambda_handler(event, context):
     try:
         response = bedrock_client.invoke_model(modelId="amazon.titan-image-generator-v1", body=json.dumps(native_request))
         model_response = json.loads(response["body"].read())
-    
+        
         base64_image_data = model_response["images"][0]
         image_data = base64.b64decode(base64_image_data)
         
@@ -49,7 +49,10 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": f"Success with generating image using: {prompt}", "s3_path": f"bucket: {bucket_name} -> {s3_image_path}"})
+            "body": json.dumps({
+                "message": f"success with generating image using: {prompt}",
+                "s3_path": f"bucket: {bucket_name} -> {s3_image_path}"
+            })
         }
         
     except Exception as e:
@@ -58,9 +61,9 @@ def lambda_handler(event, context):
             "body": json.dumps({"error":str(e)})
         }
 
-    if not bucket_name or not prompt:
+    if not prompt:
         return {
             "statusCode": 400,
-            "body": json.dumps({"error": "Please provide both 'bucket_name' and 'prompt' in the request body"})
+            "body": json.dumps({"error": "missing 'prompt' in the request body"})
         }
         
