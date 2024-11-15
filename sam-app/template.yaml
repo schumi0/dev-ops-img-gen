@@ -12,8 +12,9 @@ Globals:
 
 Resources:
   ImageGenFunction:
-    Type: AWS::Serverless::Function 
-      CodeUri: /sam-app/image_gen/
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./sam-app/image_gen/
       Handler: app.lambda_handler
       Runtime: python3.12
       Environment: 
