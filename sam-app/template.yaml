@@ -39,7 +39,8 @@ Resources:
         - x86_64
       Events:
         ImageGen:
-          Type: Api 
+          Type: Api
+          Properties:
             Path: /generate
             Method: post
 
