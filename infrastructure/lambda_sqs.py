@@ -14,6 +14,8 @@ BUCKET_NAME =  os.environ["BUCKET_NAME"]
 CANDIDATE_NR = "55"
 
 def lambda_handler(event, context):
+    
+    print("got to lambda handler")
     # Loop through all SQS records in the event
     for record in event["Records"]:
         # Extract the SQS message body
@@ -33,12 +35,16 @@ def lambda_handler(event, context):
                 "seed": seed,
             },
         }
+        
 
+        
         # Invoke the model
         response = bedrock_client.invoke_model(
             modelId=MODEL_ID,
             body=json.dumps(native_request)
         )
+        
+        print("Model Response:", response)
 
         model_response = json.loads(response["body"].read())
         base64_image_data = model_response["images"][0]
