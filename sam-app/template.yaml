@@ -33,7 +33,7 @@ Resources:
       - Statement:
           Effect: Allow
           Action:
-            -  "bedrock:InvokeModel"
+            - "bedrock:InvokeModel"
           Resource: "*"
       Architectures:
         - x86_64
@@ -43,33 +43,14 @@ Resources:
           Properties:
             Path: /generate
             Method: post
+
   ReqSQSImageGen:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: "cara011-Image-SQS-Function"
-      CodeUri: ./infrastructure/lambda_sqs.py
       DelaySeconds: 10
       VisibilityTimeout: 40
-        Handler: app.sqs_lambda_handler
-        Runtime: python3.12
-        Environment: 
-          Variables:
-            S3_BUCKET: "pgr301-couch-explorers"
-            CANDIDATE_NR: "55"
-            S3_TFSTATE_BUCKET: "pgr301-2024-terraform-state"
-        Policies:
-        - AWSLambdaBasicExecutionRole
-        - Statement:
-            Effect: Allow
-            Action:
-              - "sqs:sendMessage"
-            Resource: !GetAtt ReqSQSImageGen.Arn
-        Events:
-          QueApi:
-            Type: Api
-            Properties:
-              Path: /generate-que-request
-              Method: post
+
   ImageGenQueueFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -86,7 +67,7 @@ Resources:
         SQSQueueEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt ImageGenQueue.Arn
+            Queue: !GetAtt ReqSQSImageGen.Arn
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -102,14 +83,14 @@ Resources:
               - "sqs:ReceiveMessage"
               - "sqs:DeleteMessage"
               - "sqs:GetQueueAttributes"
-            Resource: !GetAtt ImageGenQueue.Arn
+            Resource: !GetAtt ReqSQSImageGen.Arn
         - Statement:
             Effect: Allow
             Action:
               - "bedrock:InvokeModel"
             Resource: "*"
 
-<<<<<<< HEAD
+
   # IAM Role for Lambda Functions
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -142,10 +123,7 @@ Resources:
                 Action: "bedrock:InvokeModel"
                 Resource: "*"
               
-  
-=======
 
->>>>>>> 581aefb898e9addb8d1070c6bd33e5bb4cdcd1fb
 #Edited from the original SAM-app template generator
 Outputs:
   ImageGenApi:
