@@ -54,9 +54,9 @@ Resources:
   ImageGenQueueFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./infrastructure/lambda_sqs.py
+      CodeUri: ./infrastructure/
       Handler: lambda_sqs.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.12
       Role: !GetAtt LambdaExecutionRole.Arn
       Environment:
         Variables:
