@@ -22,19 +22,19 @@ Resources:
           S3_BUCKET: "pgr301-couch-explorers"
           CANDIDATE_NR: "55"
       Policies:
-      - AWSLambdaBasicExecutionRole
-      - Statement:
-          Effect: Allow
-          Action:
-            - "s3:PutObject"
-            - "s3:ListBucket"
-          Resource:
-            - "arn:aws:s3:::pgr301-couch-explorers/55/*"
-      - Statement:
-          Effect: Allow
-          Action:
-            - "bedrock:InvokeModel"
-          Resource: "*"
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action:
+              - "s3:PutObject"
+              - "s3:ListBucket"
+            Resource:
+              - "arn:aws:s3:::pgr301-couch-explorers/55/*"
+        - Statement:
+            Effect: Allow
+            Action:
+              - "bedrock:InvokeModel"
+            Resource: "*"
       Architectures:
         - x86_64
       Events:
@@ -52,50 +52,48 @@ Resources:
       VisibilityTimeout: 360
 
   ImageGenQueueFunction:
-  Type: AWS::Serverless::Function
-  Properties:
-    CodeUri: ./infrastructure/lambda_sqs.py
-    Handler: lambda_sqs.lambda_handler
-    Runtime: python3.12
-    Role: !GetAtt LambdaExecutionRole.Arn
-    Environment:
-      Variables:
-        BUCKET_NAME: "pgr301-couch-explorers"
-        MODEL_NAME: "titan-v1"
-        CANDIDATE_NR: "55"
-    Policies:
-      - AWSLambdaBasicExecutionRole
-      - Statement:
-          Effect: Allow
-          Action:
-            - "s3:PutObject"
-            - "s3:ListBucket"
-          Resource:
-            - "arn:aws:s3:::pgr301-couch-explorers/55/*"
-      - Statement:
-          Effect: Allow
-          Action:
-            - "sqs:ReceiveMessage"
-            - "sqs:DeleteMessage"
-            - "sqs:GetQueueAttributes"
-          Resource: !GetAtt ReqSQSImageGen.Arn
-      - Statement:
-          Effect: Allow
-          Action:
-            - "bedrock:InvokeModel"
-          Resource: "*"
-    Events:
-      SQSQueueEvent:
-        Type: SQS
-        Properties:
-          Queue: !GetAtt ReqSQSImageGen.Arn
-      ApiEvent:
-        Type: Api
-        Properties:
-          Path: /generate-que-request
-          Method: POST
-
-
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./infrastructure/lambda_sqs.py
+      Handler: lambda_sqs.lambda_handler
+      Runtime: python3.12
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          BUCKET_NAME: "pgr301-couch-explorers"
+          MODEL_NAME: "titan-v1"
+          CANDIDATE_NR: "55"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action:
+              - "s3:PutObject"
+              - "s3:ListBucket"
+            Resource:
+              - "arn:aws:s3:::pgr301-couch-explorers/55/*"
+        - Statement:
+            Effect: Allow
+            Action:
+              - "sqs:ReceiveMessage"
+              - "sqs:DeleteMessage"
+              - "sqs:GetQueueAttributes"
+            Resource: !GetAtt ReqSQSImageGen.Arn
+        - Statement:
+            Effect: Allow
+            Action:
+              - "bedrock:InvokeModel"
+            Resource: "*"
+      Events:
+        SQSQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ReqSQSImageGen.Arn
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /generate-que-request
+            Method: POST
 
   # IAM Role for Lambda Functions
   LambdaExecutionRole:
@@ -128,9 +126,8 @@ Resources:
               - Effect: Allow
                 Action: "bedrock:InvokeModel"
                 Resource: "*"
-              
 
-#Edited from the original SAM-app template generator
+# Outputs
 Outputs:
   ImageGenApi:
     Description: "API Gateway endpoint URL for Prod stage for Image Gen function"
@@ -140,7 +137,7 @@ Outputs:
     Value: !GetAtt ImageGenFunction.Arn
   ImageGenIamRole:
     Description: "Implicit IAM Role created for Image Gen Function"
-    Value: !GetAtt ImageGenFunctionRole.Arn
+    Value: !GetAtt LambdaExecutionRole.Arn
   QueueUrl:
     Description: "SQS Queue URL"
     Value: !Ref ReqSQSImageGen
