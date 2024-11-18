@@ -68,11 +68,12 @@ Resources:
           Type: SQS
           Properties:
             Queue: !GetAtt ReqSQSImageGen.Arn
-        ImageGen:
-          Type: AWS::Serverless::Function
+        ApiEvent:
+          Type: Api
           Properties:
-            Path: /generate-que-request
+            Parth: /generate-que-request
             Method: post
+        DependsOn: ReqSQSImageGEn
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
