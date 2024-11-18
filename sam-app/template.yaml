@@ -63,16 +63,6 @@ Resources:
         BUCKET_NAME: "pgr301-couch-explorers"
         MODEL_NAME: "titan-v1"
         CANDIDATE_NR: "55"
-    Events:
-      SQSQueueEvent:
-        Type: SQS
-        Properties:
-          Queue: !GetAtt ReqSQSImageGen.Arn
-      ApiEvent:
-        Type: Api
-        Properties:
-          Path: /generate-que-request
-          Method: POST
     Policies:
       - AWSLambdaBasicExecutionRole
       - Statement:
@@ -94,6 +84,16 @@ Resources:
           Action:
             - "bedrock:InvokeModel"
           Resource: "*"
+    Events:
+      SQSQueueEvent:
+        Type: SQS
+        Properties:
+          Queue: !GetAtt ReqSQSImageGen.Arn
+      ApiEvent:
+        Type: Api
+        Properties:
+          Path: /generate-que-request
+          Method: POST
 
 
 
