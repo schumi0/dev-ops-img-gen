@@ -92,7 +92,7 @@ Resources:
         ApiEvent:
           Type: Api
           Properties:
-            Path: /generate-que-request
+            Path: /generate-que
             Method: POST
 
   # IAM Role for Lambda Functions
