@@ -69,6 +69,7 @@ Resources:
           Properties:
             Queue: !GetAtt ReqSQSImageGen.Arn
         ImageGen:
+          Type: AWS::Serverless::Function
           Properties:
             Path: /generate-que-request
             Method: post
