@@ -43,8 +43,105 @@ Resources:
           Properties:
             Path: /generate
             Method: post
+  ReqSQSImageGen:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: "cara011-Image-SQS-Function"
+      CodeUri: ./infrastructure/lambda_sqs.py
+      DelaySeconds: 10
+      VisibilityTimeout: 40
+        Handler: app.sqs_lambda_handler
+        Runtime: python3.12
+        Environment: 
+          Variables:
+            S3_BUCKET: "pgr301-couch-explorers"
+            CANDIDATE_NR: "55"
+            S3_TFSTATE_BUCKET: "pgr301-2024-terraform-state"
+        Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action:
+              - "sqs:sendMessage"
+            Resource: !GetAtt ReqSQSImageGen.Arn
+        Events:
+          QueApi:
+            Type: Api
+            Properties:
+              Path: /generate-que-request
+              Method: post
+  ImageGenQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./infrastructure/lambda_sqs.py
+      Handler: lambda_sqs.lambda_handler
+      Runtime: python3.12
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          BUCKET_NAME: "pgr301-couch-explorers"
+          MODEL_NAME: "titan-v1"
+          CANDIDATE_NR: "55"
+      Events:
+        SQSQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ImageGenQueue.Arn
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action:
+              - "s3:PutObject"
+              - "s3:ListBucket"
+            Resource:
+              - "arn:aws:s3:::pgr301-couch-explorers/55/*"
+        - Statement:
+            Effect: Allow
+            Action:
+              - "sqs:ReceiveMessage"
+              - "sqs:DeleteMessage"
+              - "sqs:GetQueueAttributes"
+            Resource: !GetAtt ImageGenQueue.Arn
+        - Statement:
+            Effect: Allow
+            Action:
+              - "bedrock:InvokeModel"
+            Resource: "*"
 
-
+  # IAM Role for Lambda Functions
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaSQSExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:PutObject"
+                  - "s3:GetObject"
+                  - "s3:ListBucket"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "sqs:ReceiveMessage"
+                  - "sqs:DeleteMessage"
+                  - "sqs:GetQueueAttributes"
+                Resource: "*"
+              - Effect: Allow
+                Action: "bedrock:InvokeModel"
+                Resource: "*"
+              
+  
 #Edited from the original SAM-app template generator
 Outputs:
   ImageGenApi:
@@ -56,3 +153,9 @@ Outputs:
   ImageGenIamRole:
     Description: "Implicit IAM Role created for Image Gen Function"
     Value: !GetAtt ImageGenFunctionRole.Arn
+  QueueUrl:
+    Description: "SQS Queue URL"
+    Value: !Ref ReqSQSImageGen
+  AddToQueueApi:
+    Description: "API Gateway endpoint for adding messages to SQS"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate-que-request/
