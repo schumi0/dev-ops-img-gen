@@ -68,6 +68,10 @@ Resources:
           Type: SQS
           Properties:
             Queue: !GetAtt ReqSQSImageGen.Arn
+        ImageGen:
+          Properties:
+            Path: /generate-que-request
+            Method: post
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
