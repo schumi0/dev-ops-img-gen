@@ -30,8 +30,4 @@ jobs:
         sam build
     - name: Deploy SAM Stack
       run: |
-        sam deploy \
-          --stack-name sqs-lambda-stack \
-          --capabilities CAPABILITY_NAMED_IAM \
-          --no-confirm-changeset \
-          --region us-east-1
+        sam deploy --stack-name sqs-lambda-stack --capabilities CAPABILITY_NAMED_IAM --no-confirm-changeset --region eu-west-1

@@ -139,5 +139,5 @@ Outputs:
     Description: "SQS Queue URL"
     Value: !Ref ReqSQSImageGen
   AddToQueueApi:
-    Description: "API Gateway endpoint for adding messages to SQS"
+    Description: "API Gateway endpoint for adding messages to SQS. /Prod/generate-que-request/"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate-que-request/"
