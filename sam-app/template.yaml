@@ -109,6 +109,7 @@ Resources:
               - "bedrock:InvokeModel"
             Resource: "*"
 
+<<<<<<< HEAD
   # IAM Role for Lambda Functions
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -142,6 +143,9 @@ Resources:
                 Resource: "*"
               
   
+=======
+
+>>>>>>> 581aefb898e9addb8d1070c6bd33e5bb4cdcd1fb
 #Edited from the original SAM-app template generator
 Outputs:
   ImageGenApi:
