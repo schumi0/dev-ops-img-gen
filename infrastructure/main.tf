@@ -91,7 +91,7 @@ data "archive_file" "lambda_zip" {
 
 resource "aws_lambda_function" "imggen_lambda" {
   function_name = "${var.prefix}_imggen_lambda_function"
-  runtime       = "python3.12"
+  runtime       = "python3.9"
   handler       = "imggen.lambda_handler"
   role          = aws_iam_role.lambda_exec_role.arn
   filename      = "lambda-function-payload.zip"
