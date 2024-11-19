@@ -86,7 +86,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/../sam-app/image_gen/app.py"
+  source_file = "${path.module}/../infrastructure/lambda_sqs.py"
   output_path = "${path.module}/lambda-function-payload.zip"
 }
 
