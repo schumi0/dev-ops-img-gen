@@ -127,20 +127,6 @@ Resources:
             Path: /generate-que
             Method: POST
 
-Outputs:
-  ImageGenFunction:
-    Description: "Image Gen Lambda Function ARN"
-    Value: !GetAtt ImageGenFunction.Arn
-  ImageGenIamRole:
-    Description: "Implicit IAM Role created for Image Gen Function"
-    Value: !GetAtt LambdaExecutionRole.Arn
-  QueueUrl:
-    Description: "SQS Queue URL"
-    Value: !Ref ReqSQSImageGen
-  AddToQueueApi:
-    Description: "API Gateway endpoint for adding messages to SQS. /Prod/generate-que/"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate-que/"
-
 # Outputs
 Outputs:
   ImageGenApi:

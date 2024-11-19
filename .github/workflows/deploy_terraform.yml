@@ -1,12 +1,13 @@
-name: Deploy SQS and Lambda Resources
+name: Deploy SQS Resources
 
 on:
   push:
     branches:
-      - main  # Temporary
+      - main
+
 jobs:
-  deploy:
-    name: Deploy Terraform SQS Template
+  deploy-infrastructure:
+    name: Deploy SQS and Infrastructure
     runs-on: ubuntu-latest
 
     steps:
@@ -19,12 +20,15 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
-    - name: Validate SAM Template
+
+    - name: Validate SAM Template for Infrastructure
       run: |
-        sam validate
-    - name: Build SAM Application
+        sam validate -t sam-app/template.yaml
+
+    - name: Build SAM Application for Infrastructure
       run: |
-        sam build
-    - name: Deploy SAM Stack
+        sam build -t sam-app/template.yaml
+
+    - name: Deploy SAM Stack for Infrastructure
       run: |
-        sam deploy --stack-name sqs-lambda-stack --capabilities CAPABILITY_NAMED_IAM --no-confirm-changeset --region eu-west-1
+        sam deploy --stack-name sqs-stack --template-file .aws-sam/build/template.yaml --capabilities CAPABILITY_NAMED_IAM --region eu-west-1
