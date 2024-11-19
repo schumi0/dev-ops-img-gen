@@ -137,7 +137,7 @@ Outputs:
     Description: "Image Gen Lambda Function ARN"
     Value: !GetAtt ImageGenFunction.Arn
   ImageGenIamRole:
-    Description: "Implicit IAM Role created for Image Gen Function"
+    Description: "Implicit IAM Role created for Image Gen Function COOOOOOL"
     Value: !GetAtt LambdaExecutionRole.Arn
   QueueUrl:
     Description: "SQS Queue URL"
