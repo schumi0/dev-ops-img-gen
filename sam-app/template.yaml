@@ -75,5 +75,5 @@ Outputs:
 
   ImageGenerationFunctionIamRole:
     Description: Implicit IAM Role created for Image Generation function
-    Value: !GetAtt ImageGenerationFunctionRole.Arn
+    Value: !GetAtt ImageGenFunctionRole.Arn
 
