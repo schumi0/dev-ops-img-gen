@@ -44,6 +44,38 @@ Resources:
             Path: /generate
             Method: post
 
+  # IAM Role for Lambda Functions
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaSQSExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:PutObject"
+                  - "s3:GetObject"
+                  - "s3:ListBucket"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "sqs:ReceiveMessage"
+                  - "sqs:DeleteMessage"
+                  - "sqs:GetQueueAttributes"
+                Resource: "*"
+              - Effect: Allow
+                Action: "bedrock:InvokeModel"
+  
+  
   ReqSQSImageGen:
     Type: AWS::SQS::Queue
     Properties:
@@ -54,7 +86,7 @@ Resources:
   ImageGenQueueFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../infrastructure/
+      CodeUri: ./infrastructure/
       Handler: lambda_sqs.lambda_handler
       Runtime: python3.12
       Role: !GetAtt LambdaExecutionRole.Arn
@@ -95,37 +127,19 @@ Resources:
             Path: /generate-que
             Method: POST
 
-  # IAM Role for Lambda Functions
-  LambdaExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: LambdaSQSExecutionPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "s3:PutObject"
-                  - "s3:GetObject"
-                  - "s3:ListBucket"
-                Resource: "*"
-              - Effect: Allow
-                Action:
-                  - "sqs:ReceiveMessage"
-                  - "sqs:DeleteMessage"
-                  - "sqs:GetQueueAttributes"
-                Resource: "*"
-              - Effect: Allow
-                Action: "bedrock:InvokeModel"
-                Resource: "*"
+Outputs:
+  ImageGenFunction:
+    Description: "Image Gen Lambda Function ARN"
+    Value: !GetAtt ImageGenFunction.Arn
+  ImageGenIamRole:
+    Description: "Implicit IAM Role created for Image Gen Function"
+    Value: !GetAtt LambdaExecutionRole.Arn
+  QueueUrl:
+    Description: "SQS Queue URL"
+    Value: !Ref ReqSQSImageGen
+  AddToQueueApi:
+    Description: "API Gateway endpoint for adding messages to SQS. /Prod/generate-que/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate-que/"
 
 # Outputs
 Outputs:
