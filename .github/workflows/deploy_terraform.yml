@@ -35,7 +35,8 @@ jobs:
         ls -la # Verify files are present
     - name: Initialize Terraform
       working-directory: infrastructure
-      run:  yes yes | terraform init
+      run: |
+        terraform init -force-copy
 
     - name: Validate Terraform
       run: | 
