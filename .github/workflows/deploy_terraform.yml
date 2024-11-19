@@ -21,13 +21,20 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
 
+    - name: Debug Repository Structure
+      run: |
+        echo "Current Directory:"
+        pwd
+        echo "Repository Structure:"
+        ls -R
+  
     - name: Validate SAM Template for Infrastructure
       run: |
         sam validate -t sam-app/template.yaml
 
     - name: Build SAM Application for Infrastructure
       run: |
-        sam build -t dev-ops-img-gen/sam-app/template.yaml
+        sam build -t sam-app/template.yaml
 
     - name: Deploy SAM Stack for Infrastructure
       run: |
