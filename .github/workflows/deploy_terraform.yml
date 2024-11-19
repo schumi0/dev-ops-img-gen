@@ -27,11 +27,11 @@ jobs:
       run: |
         terraform init
       working-directory: infrastructure/
-    - name: Terraform Plan or Apply
+    - name: Terraform Plan & Apply
       run: |
         if [ "${{ github.ref }}" == "refs/heads/main" ]; then
           terraform apply -auto-approve
         else
           terraform plan
         fi
-      working-directory: dev-ops-img-gen/infrastructure
+      working-directory: inftrastructure/
