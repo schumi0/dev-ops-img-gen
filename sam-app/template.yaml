@@ -125,7 +125,15 @@ Resources:
       QueueName: "cara011-Image-SQS-Function"
       DelaySeconds: 10
       VisibilityTimeout: 360
+  
 
+  ImageGenQueueFunctionApiGatewayPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ImageGenQueueFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessRestApi}/*/*/generate-que"
 
 # Outputs
 Outputs:
