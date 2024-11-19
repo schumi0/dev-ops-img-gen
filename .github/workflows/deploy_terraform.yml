@@ -31,4 +31,4 @@ jobs:
 
     - name: Deploy SAM Stack for Infrastructure
       run: |
-        sam deploy --stack-name sqs-stack --template-file .aws-sam/build/template.yaml --capabilities CAPABILITY_NAMED_IAM --region eu-west-1
+        sam deploy --stack-name sqs-stack --template-file .aws-sam/build/template.yaml --capabilities CAPABILITY_IAM --region eu-west-1
