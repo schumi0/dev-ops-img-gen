@@ -40,12 +40,12 @@ jobs:
 
     - name: Terraform Plan
       working-directory: infrastructure
-      run: terraform plan -out "tfplan"
+      run: terraform plan -out "tfplan" -var="notification_email=your_email@example.com"
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main'
       working-directory: infrastructure
-      run: terraform apply -auto-approve "tfplan"
+      run: terraform apply -auto-approve "tfplan" -var="notification_email=your_email@example.com"
 
     - name: Terraform Destroy (on Staging)
       if: github.ref == 'refs/heads/staging'
