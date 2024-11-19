@@ -34,18 +34,19 @@ jobs:
         cd infrastructure
         ls -la # Verify files are present
     - name: Initialize Terraform
-      run: terraform init
+      working-directory: infrastructure
+      run: |
+        terraform init
 
     - name: Validate Terraform
-      run: terraform validate
+      run: | 
+        terraform validate
 
     - name: Terraform Plan
-      run: terraform plan
+      run: |
+        terraform plan -out "tfplan" -var="prefix=cara011"
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main'
-      run: terraform apply -auto-approve
-
-    - name: Terraform Destroy (on Staging)
-      if: github.ref == 'refs/heads/staging'
-      run: terraform destroy -auto-approve
+      run: |
+        terraform apply "tfplan" -var="prefix=cara011" -auto-approve

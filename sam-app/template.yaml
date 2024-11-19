@@ -125,7 +125,7 @@ Resources:
       QueueName: "cara011-Image-SQS-Function"
       DelaySeconds: 10
       VisibilityTimeout: 360
-  
+      
 
   ImageGenQueueFunctionApiGatewayPermission:
     Type: AWS::Lambda::Permission

@@ -15,6 +15,7 @@ terraform {
   backend "s3" {
     bucket  = "pgr301-2024-terraform-state"
     key     = "./infrastructure/terraform.tfstate"
+    region  = "eu-west-1"
   }
 }
 
@@ -89,7 +90,7 @@ data "archive_file" "lambda_zip" {
   output_path = "${path.module}/lambda-function-payload.zip"
 }
 
-resource "aws_lambda_function" "imggen_lambda" {
+resource "aws_lambda_function" "image_generate_lambda" {
   function_name = "${var.prefix}_imggen_lambda_function"
   runtime       = "python3.9"
   handler       = "imggen.lambda_handler"
@@ -106,14 +107,14 @@ resource "aws_lambda_function" "imggen_lambda" {
 }
 
 resource "aws_lambda_function_url" "imggen_lambda_url" {
-  function_name      = aws_lambda_function.imggen_lambda.function_name
+  function_name      = aws_lambda_function.image_generate_lambda.function_name
   authorization_type = "NONE"
 }
 
 resource "aws_lambda_permission" "allow_lambda_url" {
   statement_id          = "AllowLambdaURLInvoke"
   action                = "lambda:InvokeFunctionUrl"
-  function_name         = aws_lambda_function.imggen_lambda.function_name
+  function_name         = aws_lambda_function.image_generate_lambda.function_name
   principal             = "*"
   function_url_auth_type = aws_lambda_function_url.imggen_lambda_url.authorization_type
 }
@@ -125,7 +126,7 @@ output "sqs_queue_name" {
 }
 
 output "lambda_function_name" {
-  value = aws_lambda_function.imggen_lambda.function_name
+  value = aws_lambda_function.image_generate_lambda.function_name
 }
 
 output "lambda_url" {
