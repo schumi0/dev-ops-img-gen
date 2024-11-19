@@ -30,7 +30,7 @@ jobs:
       
       - name: Build SAM Application
         run: |
-          sam build - sam-app/template.yaml
+          sam build -t sam-app/template.yaml
       
       - name: Validate SAM Template
         run: |
