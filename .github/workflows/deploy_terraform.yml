@@ -29,7 +29,10 @@ jobs:
         
     - name: Change Directory to Infra
       run: cd infrastructure  
-
+    - name: Navigate to Infrastructure Directory
+      run: |
+        cd infrastructure
+        ls -la # Verify files are present
     - name: Initialize Terraform
       run: terraform init
 
