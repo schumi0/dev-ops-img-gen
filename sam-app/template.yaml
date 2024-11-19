@@ -41,7 +41,7 @@ Resources:
           Properties:
             Path: /generate
             Method: post
-  #Fault is here!
+  #Fault is here! Cool change!
   ImageGenQueueFunction:
     Type: AWS::Serverless::Function
     Properties:
