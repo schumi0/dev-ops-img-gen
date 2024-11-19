@@ -41,48 +41,6 @@ Resources:
           Properties:
             Path: /generate
             Method: post
-
-  LambdaExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: LambdaSQSExecutionPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "s3:PutObject"
-                  - "s3:GetObject"
-                  - "s3:ListBucket"
-                Resource:
-                  - "arn:aws:s3:::pgr301-couch-explorers/*"
-              - Effect: Allow
-                Action:
-                  - "sqs:ReceiveMessage"
-                  - "sqs:DeleteMessage"
-                  - "sqs:GetQueueAttributes"
-                Resource: !GetAtt ReqSQSImageGen.Arn
-              - Effect: Allow
-                Action:
-                  - "bedrock:InvokeModel"
-                Resource: "*"
-
-  ReqSQSImageGen:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: "cara011-Image-SQS-Function"
-      DelaySeconds: 10
-      VisibilityTimeout: 360
-
-
   #Fault is here!
   ImageGenQueueFunction:
     Type: AWS::Serverless::Function
@@ -127,6 +85,47 @@ Resources:
           Properties:
             Path: /generate-que
             Method: POST
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaSQSExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:PutObject"
+                  - "s3:GetObject"
+                  - "s3:ListBucket"
+                Resource:
+                  - "arn:aws:s3:::pgr301-couch-explorers/*"
+              - Effect: Allow
+                Action:
+                  - "sqs:ReceiveMessage"
+                  - "sqs:DeleteMessage"
+                  - "sqs:GetQueueAttributes"
+                Resource: !GetAtt ReqSQSImageGen.Arn
+              - Effect: Allow
+                Action:
+                  - "bedrock:InvokeModel"
+                Resource: "*"
+
+  ReqSQSImageGen:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: "cara011-Image-SQS-Function"
+      DelaySeconds: 10
+      VisibilityTimeout: 360
+
 
 # Outputs
 Outputs:
