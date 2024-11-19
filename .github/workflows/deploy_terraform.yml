@@ -23,7 +23,7 @@ jobs:
 
     - name: Validate SAM Template for Infrastructure
       run: |
-        sam validate -t dev-ops-img-gen/sam-app/template.yaml
+        sam validate -t sam-app/template.yaml
 
     - name: Build SAM Application for Infrastructure
       run: |
