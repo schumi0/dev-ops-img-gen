@@ -5,7 +5,7 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 350
+    Timeout: 60
     MemorySize: 128
 
 
@@ -44,113 +44,36 @@ Resources:
             Path: /generate
             Method: post
   #Fault is here! Cool change!
-  ImageGenQueueFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./
-      Handler: lambda_sqs.lambda_handler
-      Runtime: python3.9
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Environment:
-        Variables:
-          BUCKET_NAME: "pgr301-couch-explorers"
-          MODEL_NAME: "titan-v1"
-          CANDIDATE_NR: "55"
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - Statement:
-            Effect: Allow
-            Action:
-              - "s3:PutObject"
-              - "s3:ListBucket"
-            Resource:
-              - "arn:aws:s3:::pgr301-couch-explorers/55/*"
-        - Statement:
-            Effect: Allow
-            Action:
-              - "sqs:ReceiveMessage"
-              - "sqs:DeleteMessage"
-              - "sqs:GetQueueAttributes"
-            Resource: !GetAtt ReqSQSImageGen.Arn
-        - Statement:
-            Effect: Allow
-            Action:
-              - "bedrock:InvokeModel"
-            Resource: "*"
-      Events:
-        SQSQueueEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt ReqSQSImageGen.Arn
-        ApiEvent:
-          Type: Api
-          Properties:
-            Path: /generate-que
-            Method: POST
+  
 
-  LambdaExecutionRole:
-    Type: AWS::IAM::Role
+  CustomResourceGroup:
+    Type: AWS::ResourceGroups::Group
     Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: LambdaSQSExecutionPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - "s3:PutObject"
-                  - "s3:GetObject"
-                  - "s3:ListBucket"
-                Resource:
-                  - "arn:aws:s3:::pgr301-couch-explorers/*"
-              - Effect: Allow
-                Action:
-                  - "sqs:ReceiveMessage"
-                  - "sqs:DeleteMessage"
-                  - "sqs:GetQueueAttributes"
-                Resource: !GetAtt ReqSQSImageGen.Arn
-              - Effect: Allow
-                Action:
-                  - "bedrock:InvokeModel"
-                Resource: "*"
+      Name:
+        Fn::Sub: InsightsMonitoring-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
 
-  ReqSQSImageGen:
-    Type: AWS::SQS::Queue
+  InsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
     Properties:
-      QueueName: "cara011-Image-SQS-Function"
-      DelaySeconds: 10
-      VisibilityTimeout: 360
-      
+      ResourceGroupName:
+        Ref: CustomResourceGroup
+      AutoConfigurationEnabled: 'true'
 
-  ImageGenQueueFunctionApiGatewayPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !Ref ImageGenQueueFunction
-      Action: lambda:InvokeFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessRestApi}/*/*/generate-que"
+
 
 # Outputs
 Outputs:
   ImageGenApi:
     Description: "API Gateway endpoint URL for Prod stage for Image Gen function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate/"
+
   ImageGenFunction:
     Description: "Image Gen Lambda Function ARN"
     Value: !GetAtt ImageGenFunction.Arn
-  ImageGenIamRole:
-    Description: "Implicit IAM Role created for Image Gen Function COOOOOOL"
-    Value: !GetAtt LambdaExecutionRole.Arn
-  QueueUrl:
-    Description: "SQS Queue URL"
-    Value: !Ref ReqSQSImageGen
-  AddToQueueApi:
-    Description: "API Gateway endpoint for adding messages to SQS. /Prod/generate-que/"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate-que/"
+
+  ImageGenerationFunctionIamRole:
+    Description: Implicit IAM Role created for Image Generation function
+    Value: !GetAtt ImageGenerationFunctionRole.Arn
+
