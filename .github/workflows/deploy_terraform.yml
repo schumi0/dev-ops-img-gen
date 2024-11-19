@@ -38,4 +38,3 @@ jobs:
         else
           terraform plan
         fi
-      working-directory: inftrastructure/
