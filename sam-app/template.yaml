@@ -82,10 +82,12 @@ Resources:
       DelaySeconds: 10
       VisibilityTimeout: 360
 
+
+  #Fault is here!
   ImageGenQueueFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: /infrastructure/
+      CodeUri: dev-ops-img-gen/infrastructure/
       Handler: lambda_sqs.lambda_handler
       Runtime: python3.12
       Role: !GetAtt LambdaExecutionRole.Arn
