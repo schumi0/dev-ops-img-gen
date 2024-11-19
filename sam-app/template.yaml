@@ -8,6 +8,8 @@ Globals:
     Timeout: 350
     MemorySize: 128
 
+
+
 Resources:
   ImageGenFunction:
     Type: AWS::Serverless::Function

@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "eu-west-1"
+}
+
 terraform {
   required_version = ">= 1.9"
   required_providers {
@@ -7,143 +11,128 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "pgr301-2024-terraform-state"
-    key    = "lambda-sqs-integration/terraform.tfstate"
-    region = "eu-west-1"
+    bucket  = "pgr301-2024-terraform-state"
+    key     = "infrastructure/terraform.tfstate"
+    region  = "eu-west-1"
   }
 }
 
-variable "notification_email" {
-  description = "The email address to receive CloudWatch alarm notifications"
-  type        = string
-}
-
-
-provider "aws" {
-  region = "eu-west-1"
-}
-
-# S3 Bucket Data Source
-data "aws_s3_bucket" "s3_bucket_storage" {
-  bucket = "pgr301-couch-explorers"
+variable "prefix" {
+  type = string
 }
 
 # SQS Queue
-resource "aws_sqs_queue" "image_generation_queue" {
-  name = "image_generation_queue"
+resource "aws_sqs_queue" "imggen_que" {
+  name = "${var.prefix}-titanv1-imggen-queue"
 }
 
 # IAM Role for Lambda
-resource "aws_iam_role" "lambda_role" {
-  name = "lambda_sqs_integration_role"
+resource "aws_iam_role" "lambda_exec_role" {
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
+    "Version": "2012-10-17",
+    "Statement": [
       {
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "lambda.amazonaws.com"
         }
-        Action = "sts:AssumeRole"
       }
     ]
   })
+
+  name = "${var.prefix}-lambda-exec-role"
 }
 
-# IAM Policy for Lambda Permissions
-resource "aws_iam_policy" "lambda_policy" {
-  name = "lambda_sqs_s3_access_policy"
+# IAM Policy for Lambda
+resource "aws_iam_role_policy" "lambda_imggen_policy" {
+  name = "${var.prefix}_LambdaImgGenPolicy"
+  role = aws_iam_role.lambda_exec_role.id
+
   policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
+    "Version": "2012-10-17",
+    "Statement": [
       {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject"
-        ]
-        Resource = "arn:aws:s3:::pgr301-couch-explorers/*"
+        "Effect": "Allow",
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        "Resource": "*"
       },
       {
-        Effect = "Allow"
-        Action = [
+        "Effect": "Allow",
+        "Action": "lambda:InvokeFunction",
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
-        ]
-        Resource = "${aws_sqs_queue.image_generation_queue.arn}"
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Resource = "arn:aws:logs:*:*:*"
+        ],
+        "Resource": "*"
       }
     ]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.lambda_policy.arn
+# Attach IAM Policy to Role
+resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
+  role       = aws_iam_role.lambda_exec_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_lambda_function" "image_generator" {
-  function_name = "ImageGenerationFunction"
-  role          = aws_iam_role.lambda_role.arn
-  handler       = "lambda_sqs.lambda_handler"
-  runtime       = "python3.9"
-  timeout       = 30
+# Archive File for Lambda Deployment
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/../infrastructure/lambda_sqs.py" # Adjust this path if necessary
+  output_path = "${path.module}/lambda-function-payload.zip"
+}
 
-  filename         = "lambda_function_payload.zip"
-  source_code_hash = filebase64sha256("lambda_function_payload.zip")
+# Lambda Function
+resource "aws_lambda_function" "image_generate_lambda" {
+  function_name = "${var.prefix}_imggen_lambda_function"
+  runtime       = "python3.9"
+  handler       = "imggen.lambda_handler"
+  role          = aws_iam_role.lambda_exec_role.arn
+  filename      = data.archive_file.lambda_zip.output_path # Reference dynamically generated zip
 
   environment {
     variables = {
-      BUCKET_NAME = data.aws_s3_bucket.s3_bucket_storage.bucket
+      LOG_LEVEL  = "DEBUG"
+      SQS_QUEUE  = aws_sqs_queue.imggen_que.name
+      MODEL_NAME = "titan-v1"
     }
   }
-
-  depends_on = [aws_iam_role_policy_attachment.lambda_policy_attachment]
 }
 
-# Link Lambda to SQS with Event Source Mapping
-resource "aws_lambda_event_source_mapping" "sqs_trigger" {
-  event_source_arn = aws_sqs_queue.image_generation_queue.arn
-  function_name    = aws_lambda_function.image_generator.arn
-  batch_size       = 10
+# Lambda Function URL
+resource "aws_lambda_function_url" "imggen_lambda_url" {
+  function_name      = aws_lambda_function.image_generate_lambda.function_name
+  authorization_type = "NONE"
 }
 
-# SNS Topic for CloudWatch Alarm Notifications
-resource "aws_sns_topic" "cloudwatch_alarm_topic" {
-  name = "sqs-delays-alarm-topic"
+# Lambda Permission for URL
+resource "aws_lambda_permission" "allow_lambda_url" {
+  statement_id          = "AllowLambdaURLInvoke"
+  action                = "lambda:InvokeFunctionUrl"
+  function_name         = aws_lambda_function.image_generate_lambda.function_name
+  principal             = "*"
+  function_url_auth_type = aws_lambda_function_url.imggen_lambda_url.authorization_type
 }
 
-# SNS Email Subscription for Alarms
-resource "aws_sns_topic_subscription" "alarm_email_subscription" {
-  topic_arn = aws_sns_topic.cloudwatch_alarm_topic.arn
-  protocol  = "email"
-  endpoint  = var.notification_email
+# Outputs
+output "sqs_queue_name" {
+  value = aws_sqs_queue.imggen_que.name
 }
 
-# CloudWatch Alarm for SQS
-resource "aws_cloudwatch_metric_alarm" "sqs_oldest_message_alarm" {
-  alarm_name          = "SQS-Oldest-Message-Age-High"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  metric_name         = "ApproximateAgeOfOldestMessage"
-  namespace           = "AWS/SQS"
-  period              = 60
-  statistic           = "Maximum"
-  threshold           = 300
+output "lambda_function_name" {
+  value = aws_lambda_function.image_generate_lambda.function_name
+}
 
-  dimensions = {
-    QueueName = aws_sqs_queue.image_generation_queue.name
-  }
-
-  alarm_description = "Triggered when the age of the oldest message in the SQS queue exceeds 5 minutes."
-  actions_enabled   = true
-  alarm_actions     = [aws_sns_topic.cloudwatch_alarm_topic.arn]
+output "lambda_url" {
+  value = aws_lambda_function_url.imggen_lambda_url.function_url
 }
