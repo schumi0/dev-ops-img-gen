@@ -13,6 +13,12 @@ terraform {
   }
 }
 
+variable "notification_email" {
+  description = "The email address to receive CloudWatch alarm notifications"
+  type        = string
+}
+
+
 provider "aws" {
   region = "eu-west-1"
 }
@@ -96,7 +102,7 @@ resource "aws_lambda_function" "image_generator" {
 
   environment {
     variables = {
-      BUCKET_NAME = data.aws_s3_bucket.image_storage.bucket
+      BUCKET_NAME = data.aws_s3_bucket.s3_bucket_storage.bucket
     }
   }
 
