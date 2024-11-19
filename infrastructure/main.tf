@@ -98,7 +98,7 @@ resource "aws_lambda_function" "image_generator" {
   timeout       = 30
 
   filename         = "lambda_sqs.zip"
-  source_code_hash = filebase64sha256("lambda_sqs.zip")
+  source_code_hash = filebase64sha256("lambda_function_payload.zip")
 
   environment {
     variables = {
