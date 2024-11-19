@@ -53,3 +53,28 @@ Globals:
               Properties:
                 Path: /generate-que
                 Method: POST
+    
+    ReqSQSImageGen:
+        Type: AWS::SQS::Queue
+        Properties:
+          QueueName: "cara011-Image-SQS-Function"
+          DelaySeconds: 10
+          VisibilityTimeout: 360
+          
+    
+  ImageGenQueueFunctionApiGatewayPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+          FunctionName: !Ref ImageGenQueueFunction
+          Action: lambda:InvokeFunction
+          Principal: apigateway.amazonaws.com
+          SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessRestApi}/*/*/generate-que"
+          
+          
+Outputs:
+    QueueUrl:
+        Description: "SQS Queue URL"
+        Value: !Ref ReqSQSImageGen
+    AddToQueueApi:
+        Description: "API Gateway endpoint for adding messages to SQS. /Prod/generate-que/"
+        Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/generate-que/"

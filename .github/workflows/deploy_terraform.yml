@@ -18,7 +18,7 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: 1.9.0
+        terraform_version: 1.9.3
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
@@ -26,30 +26,22 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
-        
-    - name: Change Directory to Infra
-      run: cd infrastructure  
-    
     
     - name: Navigate to Infrastructure Directory
       run: |
         cd infrastructure
         ls -la
+      
+    - name: Terraform Init
+      run: |
+        terraform init
+      working-directory: devopseksamen2024/dev-ops-img-gen/infrastructure
 
-    - name: Initialize Terraform
-      working-directory: infrastructure
-      run: terraform init -force-copy
-
-    - name: Terraform Plan
-      working-directory: infrastructure
-      run: terraform plan -out "tfplan"
-
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main'
-      working-directory: infrastructure
-      run: terraform apply -auto-approve "tfplan"
-
-    - name: Terraform Destroy (on Staging)
-      if: github.ref == 'refs/heads/staging'
-      working-directory: infrastructure
-      run: terraform destroy -auto-approve
+      - name: Terraform Plan or Apply
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            terraform apply -auto-approve
+          else
+            terraform plan
+          fi
+        working-directory: dev-ops-img-gen/infrastructure
