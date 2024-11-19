@@ -40,7 +40,7 @@ jobs:
 
     - name: Terraform Plan
       working-directory: infrastructure
-      run: terraform plan -out "tfplan" -var="prefix=cara011"
+      run: terraform plan -out "tfplan"
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main'
@@ -50,4 +50,4 @@ jobs:
     - name: Terraform Destroy (on Staging)
       if: github.ref == 'refs/heads/staging'
       working-directory: infrastructure
-      run: terraform destroy -auto-approve -var="prefix=cara011"
+      run: terraform destroy -auto-approve
