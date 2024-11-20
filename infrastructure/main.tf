@@ -89,7 +89,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 
 # Attach IAM Policy to Role
 resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
-  role       = aws_iam_role.lambda_role.name
+  role       = aws_iam_role.lambda_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
@@ -128,8 +128,4 @@ output "sqs_queue_name" {
 
 output "lambda_function_name" {
   value = aws_lambda_function.image_generate_lambda.function_name
-}
-
-output "lambda_url" {
-  value = aws_lambda_function_url.imggen_lambda_url.function_url
 }
