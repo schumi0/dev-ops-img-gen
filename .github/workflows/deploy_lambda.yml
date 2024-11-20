@@ -1,4 +1,4 @@
-name: ImgGen API Deploy smileyface
+name: ImgGen API Deploy And Sam Build #hi
 
 on:
   push:
@@ -9,38 +9,31 @@ on:
 jobs:
   terraform:
     name: App Deploy on Push
-    
-    runs-on: ubuntu-latest #Amazon runs on linux right?!?!
+    runs-on: ubuntu-latest
     env:
       AWS_REGION: eu-west-1
     steps:
       - name: checkout commit
         uses: actions/checkout@v3
-        
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-
       - name: AWS CLi
-        uses: aws-actions/configure-aws-credentials@v2 #v2? v4?
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
           aws-region: eu-west-1
-      
       - name: Build SAM Application
         run: |
           sam build -t sam-app/template.yaml
-      
-      - name: Validate SAM Template
+      - name: Validate SAM Template #lot of early issues with the build so used this and kept it
         run: |
           sam validate -t sam-app/template.yaml
-      
       - name: Re-pack SAM APP
         run: |
           sam package -t sam-app/template.yaml --output-template-file lambda-pkgd.yaml --s3-bucket cara011bucket
-      
       - name: Deploy SAM application
         run: |
             sam deploy -t sam-app/template.yaml --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-sentiment-CAR  --capabilities CAPABILITY_IAM --region eu-west-1

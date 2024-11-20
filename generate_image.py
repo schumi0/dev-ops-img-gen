@@ -3,20 +3,17 @@ import boto3
 import json
 import random
 
-# Set up the AWS clients
-
 bedrock_client = boto3.client("bedrock-runtime", region_name="us-east-1")
 s3_client = boto3.client("s3")
 
-# Define the model ID and S3 bucket name (replace with your actual bucket name)
 model_id = "amazon.titan-image-generator-v1"
 bucket_name = "pgr301-couch-explorers/"
 
-# Frank; Important; Change this prompt to something else before the presentation with the investors!
+#alt prompt
 prompt = "a nice sunset with a dog in front"
 
 seed = random.randint(0, 2147483647)
-s3_image_path = f"generated_images/veryCool_{seed}.png"
+s3_image_path = f"generated_images/cara011_img_gen_{seed}.png"
 
 native_request = {
     "taskType": "TEXT_IMAGE",

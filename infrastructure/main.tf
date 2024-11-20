@@ -143,30 +143,27 @@ resource "aws_sns_topic" "que_alarm_topic" {
   name = "que-alarm-topic"
 }
 
-
 resource "aws_sns_topic_subscription" "notif_subscription" {
   topic_arn = aws_sns_topic.que_alarm_topic.arn
   protocol  = "email"
   endpoint  = var.notification_email
 }
 
-
 resource "aws_cloudwatch_metric_alarm" "last-message-que-alarm" {
-    alarm_name          = "cara011_last_message_que_alarm"
-    comparison_operator = "GreaterThanThreshold"
-    evaluation_periods  = 1
-    metric_name         = "ApproximateAgeOfOldestMessage"
-    namespace           = "AWS/SQS"
-    period              = 60
-    statistic           = "Maximum"
-    threshold           = 180
+  alarm_name          = "${var.prefix}_last_message_que_alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ApproximateAgeOfOldestMessage"
+  namespace           = "AWS/SQS"
+  period              = 60
+  statistic           = "Maximum"
+  threshold           = 180
 
-    dimensions = {
+  dimensions  = {
     QueueName = var.que_name
   }
 
   alarm_actions = [aws_sns_topic.que_alarm_topic.arn]
-
 }
 
 # Outputs
@@ -176,4 +173,12 @@ output "sqs_que_name" {
 
 output "lambda_function_name" {
   value = aws_lambda_function.cara011_img_gen_lambda_function.function_name
+}
+
+output "alarm_name" {
+  value = aws_cloud_metric_alarm.cara011_last_message_que_alarm.alarm_name
+}
+
+output "notif_email" { 
+  value = aws_sns_topic_subscription.notif_subscription
 }

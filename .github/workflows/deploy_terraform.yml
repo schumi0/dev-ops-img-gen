@@ -1,4 +1,4 @@
-name: Terraform Deploy SQS Resources
+name: Terraform Deploy SQS Resources #what else
 
 on:
   push:
@@ -22,12 +22,12 @@ jobs:
         cd infrastructure
       shell: bash
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v3
+      uses: aws-actions/configure-aws-credentials@v3 # @v3? @v5?
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
-    - name: Terraform Init
+    - name: Terraform Init #Took a while to figure out :p also why no option for delete on update?
       run: |
         terraform init -migrate-state -force-copy
       working-directory: infrastructure/
@@ -35,7 +35,7 @@ jobs:
       run: terraform plan -out=tfplan
       working-directory: ./infrastructure
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/main'  # Only run on main branch
+      if: github.ref == 'refs/heads/main'  # Only run if push to main
       run: |
         terraform apply -auto-approve tfplan || exit 0
       working-directory: ./infrastructure
