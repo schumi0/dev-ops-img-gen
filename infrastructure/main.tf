@@ -134,7 +134,7 @@ resource "aws_iam_role_policy_attachment" "cara011_lambda_aim_policy_attachment"
 
 # Outputs
 output "sqs_que_name" {
-  value = aws_sqs_queue.cara011_im_ggen_que.name
+  value = aws_sqs_queue.cara011_img_gen_que.name
 }
 
 output "lambda_function_name" {
