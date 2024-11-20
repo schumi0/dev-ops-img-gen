@@ -100,7 +100,7 @@ resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
 # Lambda Function THIS IS THE ONE
 resource "aws_lambda_function" "image_generator_lambda" {
   function_name = "${var.prefix}_imggen_lambda_function"
-  role          = aws_iam_role.lambda_role.arn
+  role          = aws_iam_role.lambda_exec_role.arn
   handler       = "lambda_sqs.lambda_handler"
   runtime       = "python3.9"
   timeout       = 30
