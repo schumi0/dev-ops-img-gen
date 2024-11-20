@@ -93,7 +93,7 @@ resource "aws_iam_policy" "cara011_lambda_policy" {
 
 
 # Lambda Function THIS IS THE ONE
-resource "aws_lambda_function" "cara011_img_gen_lambda" {
+resource "aws_lambda_function" "cara011_img_gen_lambda_function" {
   function_name = "${var.prefix}_img_gen_lambda_function"
   role          = aws_iam_role.cara011_lambda_role.arn
   handler       = "lambda_sqs.lambda_handler"
