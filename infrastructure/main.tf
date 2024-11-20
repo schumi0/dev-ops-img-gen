@@ -48,7 +48,7 @@ resource "aws_iam_role" "cara011_lambda_role" {
 
 # IAM Policy for Lambda im cool  very cool giga cool suuuuper cool even cooler
 resource "aws_iam_policy" "cara011_lambda_policy" {
-  name = "sqs_iam_lambda_policy"
+  name = "${var.prefix}_sqs_iam_lambda_policy"
 
   policy = jsonencode({
     Version = "2012-10-17",
