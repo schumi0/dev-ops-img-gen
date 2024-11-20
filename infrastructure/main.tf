@@ -41,7 +41,14 @@ resource "aws_iam_role" "lambda_exec_role" {
         Principal = {
           Service = "lambda.amazonaws.com"
         }
-      }
+      },
+      {
+      Effect  = "Allow",
+      Principal = {
+        Service = "apigateway.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }
     ]
   })
   name = "${var.prefix}-lambda-exec-role"
