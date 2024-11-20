@@ -32,7 +32,7 @@ jobs:
         terraform init -migrate-state -force-copy
       working-directory: infrastructure/
     - name: Terraform Plan
-      run: Terraform plan -out=tfplan
+      run: terraform plan -out=tfplan
       working-directory: ./infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main'  # Only run on main branch
