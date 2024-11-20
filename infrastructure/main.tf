@@ -175,10 +175,6 @@ output "lambda_function_name" {
   value = aws_lambda_function.cara011_img_gen_lambda_function.function_name
 }
 
-output "alarm_name" {
-  value = aws_cloudwatch_metric_alarm.cara011_last_message_que_alarm.alarm_name
-}
-
 output "notif_email" { 
   value = aws_sns_topic_subscription.notif_subscription
 }
