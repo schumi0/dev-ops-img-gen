@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - staging
+      - stagingv2
 
 jobs:
   terraform:
