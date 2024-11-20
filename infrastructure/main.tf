@@ -176,7 +176,7 @@ output "lambda_function_name" {
 }
 
 output "alarm_name" {
-  value = aws_cloud_metric_alarm.cara011_last_message_que_alarm.alarm_name
+  value = aws_cloudwatch_metric_alarm.cara011_last_message_que_alarm.alarm_name
 }
 
 output "notif_email" { 
