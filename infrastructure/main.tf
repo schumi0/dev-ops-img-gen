@@ -12,7 +12,7 @@ terraform {
   }
   backend "s3" {
     bucket  = "pgr301-2024-terraform-state"
-    key     = "infrastructure/terraform.tfstate"
+    key     = "55/terraform.tfstate"
     region  = "eu-west-1"
   }
 }
@@ -29,7 +29,7 @@ data "aws_s3_bucket" "s3_image_storage" {
   bucket = "pgr301-couch-explorers"
 }
 
-# IAM Role for Lambda
+# IAM Role for Lambda I hate you
 resource "aws_iam_role" "cara011_lambda_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -59,7 +59,7 @@ resource "aws_iam_policy" "cara011_lambda_policy" {
           "s3:GetObject",
           "s3:ListBucket"
         ],
-        Resource = "arn:aws:s3:::pgr301-couch-explorers/55/*" # add variable
+        Resource = "arn:aws:s3:::pgr301-couch-explorers/55/*"
       },
       {
         Effect = "Allow",
@@ -124,7 +124,7 @@ data "archive_file" "lambda_zip" {
 }
 
 
-# Attach IAM Policy to Role
+# Attach IAM Policy to Role PLEASE WORK
 resource "aws_iam_role_policy_attachment" "cara011_lambda_aim_policy_attachment" {
   role       = aws_iam_role.cara011_lambda_role.name
   policy_arn = aws_iam_policy.cara011_lambda_policy.arn
