@@ -131,8 +131,12 @@ resource "aws_iam_role_policy_attachment" "cara011_lambda_aim_policy_attachment"
   depends_on = [aws_iam_role.cara011_lambda_role]
 }
 
+variable "que_name" {
+  type = string
+}
+
 data "aws_sqs_queue" "sqs_queue" {
-  name = var.queue_name
+  name = var.que_name
 }
 
 resource "aws_sns_topic" "que_alarm_topic" {
@@ -140,8 +144,8 @@ resource "aws_sns_topic" "que_alarm_topic" {
 }
 
 
-resource "aws_sns_topic_subscription" "notif_subscriptopm" {
-  topic_arn = aws_sns_topic.quealarm_topic.arn
+resource "aws_sns_topic_subscription" "notif_subscription" {
+  topic_arn = aws_sns_topic.que_alarm_topic.arn
   protocol  = "email"
   endpoint  = var.notification_email
 }
