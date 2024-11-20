@@ -17,8 +17,6 @@ terraform {
   }
 }
 
-
-
 variable "prefix" {
   type = string
 }
@@ -160,7 +158,7 @@ resource "aws_cloudwatch_metric_alarm" "last-message-que-alarm" {
     threshold           = 180
 
     dimensions = {
-    QueueName = var.sqs_queue
+    QueueName = var.que_name
   }
 
   alarm_actions = [aws_sns_topic.que_alarm_topic.arn]
