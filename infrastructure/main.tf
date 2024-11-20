@@ -22,7 +22,7 @@ variable "prefix" {
 }
 
 # SQS Queue
-resource "aws_sqs_queue" "imggen_que" {
+resource "aws_sqs_que" "imggen_que" {
   name = "${var.prefix}-titanv1-imggen-queue"
 }
 
@@ -130,8 +130,8 @@ data "archive_file" "lambda_zip" {
 }
 
 # Outputs
-output "sqs_queue_name" {
-  value = aws_sqs_queue.imggen_que.name
+output "sqs_que_name" {
+  value = aws_sqs_que.imggen_que.name
 }
 
 output "lambda_function_name" {
