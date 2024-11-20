@@ -72,7 +72,7 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = "${aws_sqs_queue.imggen_que.arn}"
       },
       {
-        Effect = Allow
+        Effect = "Allow"
           Action = [
             "bedrock:InvokeModel"
           ],
