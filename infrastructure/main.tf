@@ -21,14 +21,13 @@ variable "prefix" {
   type = string
 }
 
-
-data "aws_s3_bucket" "s3_image_storage" {
-  bucket = "pgr301-couch-explorers"
-}
-
 # SQS Queue
 resource "aws_sqs_queue" "imggen_que" {
   name = "${var.prefix}-titanv1-imggen-queue"
+}
+
+data "aws_s3_bucket" "s3_image_storage" {
+  bucket = "pgr301-couch-explorers"
 }
 
 # IAM Role for Lambda
@@ -51,7 +50,7 @@ resource "aws_iam_role" "lambda_exec_role" {
 # IAM Policy for Lambda
 resource "aws_iam_role_policy" "lambda_policy" {
   name = "${var.prefix}_sqs_iam_lambda_policy"
-  # role = aws_iam_role.lambda_exec_role.id
+  role = aws_iam_role.lambda_exec_role.id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -124,7 +123,11 @@ resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger"{
 }
 
 
-
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/../infrastructure/lambda_sqs.py" # adjust yes
+  output_path = "${path.module}/lambda-function-payload.zip"
+}
 
 # Outputs
 output "sqs_queue_name" {
