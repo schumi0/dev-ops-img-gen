@@ -2,8 +2,8 @@
 FROM maven:3.8.6-eclipse-temurin-17 AS builder
 
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
+COPY ./java_sqs_client/pom.xml .
+COPY ./java_sqs_client/src ./src
 
 RUN mvn package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
