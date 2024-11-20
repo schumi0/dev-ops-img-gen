@@ -55,7 +55,7 @@ resource "aws_iam_role" "lambda_exec_role" {
 }
 
 # IAM Policy for Lambda
-resource "aws_iam_role_policy" "lambda_policy" {
+resource "aws_iam_policy" "lambda_exec_policy" {
   name = "${var.prefix}_sqs_iam_lambda_policy"
   role = aws_iam_role.lambda_exec_role.id
 
@@ -93,12 +93,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
   })
 }
 
-# Attach IAM Policy to Role
-resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
-  role       = aws_iam_role.lambda_exec_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  depends_on = [aws_iam_role.lambda_exec_role]
-}
+
 
 # Lambda Function THIS IS THE ONE
 resource "aws_lambda_function" "image_generator_lambda" {
@@ -131,6 +126,17 @@ data "archive_file" "lambda_zip" {
   source_file = "${path.module}/../infrastructure/lambda_sqs.py" # adjust yes
   output_path = "${path.module}/lambda-function-payload.zip"
 }
+
+
+
+# Attach IAM Policy to Role
+resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
+  role       = aws_iam_role.lambda_exec_role.name
+  policy_arn = aws_iam_policy.lambda_exec_policy.arn
+  depends_on = [aws_iam_role.lambda_exec_role]
+}
+
+
 
 # Outputs
 output "sqs_que_name" {
