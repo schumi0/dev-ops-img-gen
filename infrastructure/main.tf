@@ -23,7 +23,7 @@ variable "prefix" {
 
 # SQS Queue
 resource "aws_sqs_queue" "imggen_que" {
-  name = "${var.prefix}-titanv1-imggen-queue"
+  name = "titanv1-imggen-queue"
 }
 
 data "aws_s3_bucket" "s3_image_storage" {
@@ -44,12 +44,11 @@ resource "aws_iam_role" "lambda_exec_role" {
       }
     ]
   })
-  name = "${var.prefix}_lambda_exec_role"
 }
 
 # IAM Policy for Lambda im cool  very cool
 resource "aws_iam_policy" "lambda_exec_policy" {
-  name = "${var.prefix}_sqs_iam_lambda_policy"
+  name = "sqs_iam_lambda_policy"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -89,7 +88,7 @@ resource "aws_iam_policy" "lambda_exec_policy" {
 
 # Lambda Function THIS IS THE ONE
 resource "aws_lambda_function" "image_generator_lambda" {
-  function_name = "${var.prefix}_imggen_lambda_function"
+  function_name = "imggen_lambda_function"
   role          = aws_iam_role.lambda_exec_role.arn
   handler       = "lambda_sqs.lambda_handler"
   runtime       = "python3.9"
