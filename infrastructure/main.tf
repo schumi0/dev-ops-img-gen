@@ -22,7 +22,7 @@ variable "prefix" {
 }
 
 # SQS Queue
-resource "aws_sqs_que" "imggen_que" {
+resource "aws_sqs_queue" "imggen_que" {
   name = "${var.prefix}-titanv1-imggen-queue"
 }
 
@@ -118,7 +118,7 @@ resource "aws_lambda_function" "image_generator_lambda" {
 
 resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger"{
   function_name    = aws_lambda_function.image_generator_lambda.arn
-  event_source_arn = aws_sqs_que.imggen_que.arn
+  event_source_arn = aws_sqs_queue.imggen_que.arn
   batch_size       = 10
 }
 
@@ -131,7 +131,7 @@ data "archive_file" "lambda_zip" {
 
 # Outputs
 output "sqs_que_name" {
-  value = aws_sqs_que.imggen_que.name
+  value = aws_sqs_queue.imggen_que.name
 }
 
 output "lambda_function_name" {
