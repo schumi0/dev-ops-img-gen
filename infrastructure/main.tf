@@ -77,7 +77,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
         ]
-        Resource = "${aws_sqs_queue.image_generation_queue.arn}"
+        Resource = "${aws_sqs_queue.imggen_que.arn}"
       },
       {
         Effect = "Allow"
