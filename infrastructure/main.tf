@@ -105,7 +105,7 @@ resource "aws_lambda_function" "image_generator_lambda" {
   runtime       = "python3.9"
   timeout       = 30
   filename      = data.archive_file.lambda_zip.output_path
-  source_code_hash = filebase64sha256("lambda_sqs.zip")
+  source_code_hash = filebase64sha256("lambda-function-payload.zip")
 
   environment {
     variables = {
