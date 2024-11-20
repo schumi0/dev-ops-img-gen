@@ -17,10 +17,6 @@ terraform {
   }
 }
 
-variable "prefix" {
-  type = string
-}
-
 # SQS Queue awesome que
 resource "aws_sqs_queue" "cara011_img_gen_que" {
   name = "titanv1-img-gen-queue"
@@ -130,6 +126,40 @@ resource "aws_iam_role_policy_attachment" "cara011_lambda_aim_policy_attachment"
   role       = aws_iam_role.cara011_lambda_role.name
   policy_arn = aws_iam_policy.cara011_lambda_policy.arn
   depends_on = [aws_iam_role.cara011_lambda_role]
+}
+
+data "aws_sqs_queue" "sqs_queue" {
+  name = var.queue_name
+}
+
+resource "aws_sns_topic" "que_alarm_topic" {
+  name = "que-alarm-topic"
+}
+
+
+resource "aws_sns_topic_subscription" "notif_subscriptopm" {
+  topic_arn = aws_sns_topic.quealarm_topic.arn
+  protocol  = "email"
+  endpoint  = var.notification_email
+}
+
+
+resource "aws_cloudwatch_metric_alarm" "last-message-que-alarm" {
+    alarm_name          = "cara011_last_message_que_alarm"
+    comparison_operator = "GreaterThanThreshold"
+    evaluation_periods  = 1
+    metric_name         = "ApproximateAgeOfOldestMessage"
+    namespace           = "AWS/SQS"
+    period              = 60
+    statistic           = "Maximum"
+    threshold           = 180
+
+    dimensions = {
+    QueueName = var.sqs_queue
+  }
+
+  alarm_actions = [aws_sns_topic.que_alarm_topic.arn]
+
 }
 
 # Outputs
