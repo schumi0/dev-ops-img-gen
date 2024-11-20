@@ -40,89 +40,84 @@ resource "aws_iam_role" "lambda_exec_role" {
       }
     ]
   })
-
   name = "${var.prefix}-lambda-exec-role"
 }
 
 # IAM Policy for Lambda
-resource "aws_iam_role_policy" "lambda_imggen_policy" {
-  name = "${var.prefix}_LambdaImgGenPolicy"
-  role = aws_iam_role.lambda_exec_role.id
+resource "aws_iam_role_policy" "lambda_policy" {
+  name = "${var.prefix}_sqs_iam_lambda_policy"
+  # role = aws_iam_role.lambda_exec_role.id
 
   policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
+    Version = "2012-10-17",
+    Statement = [
       {
-        "Effect": "Allow",
-        "Action": [
+        Effect = "Allow",
+        Action = [
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket"
         ],
-        "Resource": "*"
+        Resource = "arn:aws:s3:::pgr301-couch-explorers/55/*" # add variable
       },
       {
-        "Effect": "Allow",
-        "Action": "lambda:InvokeFunction",
-        "Resource": "*"
+        Effect = "Allow",
+        Action ="lambda:InvokeFunction",
+        Resource = "*"
       },
       {
-        "Effect": "Allow",
-        "Action": [
+        Effect = "Allow",
+        Action = [
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
-        ],
-        "Resource": "*"
+        ]
+        Resource = "${aws_sqs_queue.image_generation_queue.arn}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
       }
     ]
   })
 }
 
 # Attach IAM Policy to Role
-resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
-  role       = aws_iam_role.lambda_exec_role.name
+resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
+  role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# Archive File for Lambda Deployment
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_file = "${path.module}/../infrastructure/lambda_sqs.py" # Adjust this path if necessary
-  output_path = "${path.module}/lambda-function-payload.zip"
-}
-
 # Lambda Function
-resource "aws_lambda_function" "image_generate_lambda" {
+resource "aws_lambda_function" "image_generator_lambda" {
   function_name = "${var.prefix}_imggen_lambda_function"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "lambda_sqs.lambda_handler"
   runtime       = "python3.9"
-  handler       = "imggen.lambda_handler"
-  role          = aws_iam_role.lambda_exec_role.arn
-  filename      = data.archive_file.lambda_zip.output_path # Reference dynamically generated zip
+  timeout       = 30
+  filename      = data.archive_file.lambda_zip.output_path
+  source_code_hash = filebase64sha256("lambda_sqs.zip")
 
   environment {
     variables = {
-      LOG_LEVEL  = "DEBUG"
-      SQS_QUEUE  = aws_sqs_queue.imggen_que.name
-      MODEL_NAME = "titan-v1"
+      BUCKET_NAME = data.aws_s3_bucket.image_storage.bucket
     }
   }
+  depends_on = [aws_iam_role_policy_attachment.lambda_aim_policy_attachment]
 }
 
-# Lambda Function URL
-resource "aws_lambda_function_url" "imggen_lambda_url" {
-  function_name      = aws_lambda_function.image_generate_lambda.function_name
-  authorization_type = "NONE"
+
+resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger"{
+  function_name =
 }
 
-# Lambda Permission for URL
-resource "aws_lambda_permission" "allow_lambda_url" {
-  statement_id          = "AllowLambdaURLInvoke"
-  action                = "lambda:InvokeFunctionUrl"
-  function_name         = aws_lambda_function.image_generate_lambda.function_name
-  principal             = "*"
-  function_url_auth_type = aws_lambda_function_url.imggen_lambda_url.authorization_type
-}
+
+
 
 # Outputs
 output "sqs_queue_name" {
