@@ -93,7 +93,7 @@ resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# Lambda Function
+# Lambda Function THIS IS THE ONE
 resource "aws_lambda_function" "image_generator_lambda" {
   function_name = "${var.prefix}_imggen_lambda_function"
   role          = aws_iam_role.lambda_role.arn
@@ -113,7 +113,9 @@ resource "aws_lambda_function" "image_generator_lambda" {
 
 
 resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger"{
-  function_name =
+  function_name    = aws_lambda_function.image_generator_lambda.arn
+  event_source_arn = aws_sqs_que.imggen_que.arn
+  batch_size       = 10
 }
 
 
