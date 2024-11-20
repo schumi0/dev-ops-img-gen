@@ -36,7 +36,7 @@ resource "aws_iam_role" "cara011_lambda_role" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow"
+        Effect = "Allow",
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -69,7 +69,7 @@ resource "aws_iam_policy" "cara011_lambda_policy" {
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
         ]
-        Resource = "${aws_sqs_queue.imggen_que.arn}"
+        Resource = "${aws_sqs_queue.cara011_imggen_que.arn}"
       },
       {
         Effect = "Allow"
@@ -92,11 +92,10 @@ resource "aws_iam_policy" "cara011_lambda_policy" {
 }
 
 
-
 # Lambda Function THIS IS THE ONE
 resource "aws_lambda_function" "img_gen_lambda" {
   function_name = "${var.prefix}_imggen_lambda_function"
-  role          = aws_iam_role.lambda_role.arn
+  role          = aws_iam_role.cara011_lambda_role.arn
   handler       = "lambda_sqs.lambda_handler"
   runtime       = "python3.9"
   timeout       = 30
@@ -108,7 +107,7 @@ resource "aws_lambda_function" "img_gen_lambda" {
       BUCKET_NAME = data.aws_s3_bucket.s3_image_storage.bucket
     }
   }
-  depends_on = [aws_iam_role_policy_attachment.lambda_aim_policy_attachment]
+  depends_on = [aws_iam_role_policy_attachment.cara011_lambda_aim_policy_attachment]
 }
 
 
@@ -128,16 +127,16 @@ data "archive_file" "lambda_zip" {
 
 # Attach IAM Policy to Role
 resource "aws_iam_role_policy_attachment" "cara011_lambda_aim_policy_attachment" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.lambda_policy.arn
-  depends_on = [aws_iam_role.lambda_role]
+  role       = aws_iam_role.cara011_lambda_role.name
+  policy_arn = aws_iam_policy.cara011_lambda_policy.arn
+  depends_on = [aws_iam_role.cara011_lambda_role]
 }
 
 # Outputs
 output "sqs_que_name" {
-  value = aws_sqs_queue.imggen_que.name
+  value = aws_sqs_queue.cara011_imggen_que.name
 }
 
 output "lambda_function_name" {
-  value = aws_lambda_function.img_gen_lambda.function_name
+  value = aws_lambda_function.cara011_img_gen_lambda.function_name
 }
