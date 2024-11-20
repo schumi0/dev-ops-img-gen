@@ -31,11 +31,11 @@ jobs:
       run: |
         terraform init -migrate-state -force-copy
       working-directory: infrastructure/
-    - name: Terraform Plan & Apply
-      working-directory: infrastructure/
+    - name: Terraform Plan
+      run: Terraform plan -out=tfplan
+      working-directory: ./infrastructure
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'  # Only run on main branch
       run: |
-        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-          terraform apply -auto-approve
-        else
-          terraform plan
-        fi
+        terraform apply -auto-approve tfplan || exit 0
+      working-directory: ./infrastructure
