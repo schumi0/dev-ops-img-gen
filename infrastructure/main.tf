@@ -46,7 +46,7 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
-# IAM Policy for Lambda im cool  very cool giga cool suuuuper cool
+# IAM Policy for Lambda im cool  very cool giga cool suuuuper cool even cooler
 resource "aws_iam_policy" "lambda_policy" {
   name = "sqs_iam_lambda_policy"
 
