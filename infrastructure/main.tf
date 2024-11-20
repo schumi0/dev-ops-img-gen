@@ -31,7 +31,7 @@ data "aws_s3_bucket" "s3_image_storage" {
 }
 
 # IAM Role for Lambda
-resource "aws_iam_role" "lambda_exec_role" {
+resource "aws_iam_role" "lambda_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -47,7 +47,7 @@ resource "aws_iam_role" "lambda_exec_role" {
 }
 
 # IAM Policy for Lambda im cool  very cool
-resource "aws_iam_policy" "lambda_exec_policy" {
+resource "aws_iam_policy" "lambda_policy" {
   name = "sqs_iam_lambda_policy"
 
   policy = jsonencode({
@@ -89,7 +89,7 @@ resource "aws_iam_policy" "lambda_exec_policy" {
 # Lambda Function THIS IS THE ONE
 resource "aws_lambda_function" "image_generator_lambda" {
   function_name = "imggen_lambda_function"
-  role          = aws_iam_role.lambda_exec_role.arn
+  role          = aws_iam_role.lambda_role.arn
   handler       = "lambda_sqs.lambda_handler"
   runtime       = "python3.9"
   timeout       = 30
@@ -122,9 +122,9 @@ data "archive_file" "lambda_zip" {
 
 # Attach IAM Policy to Role
 resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
-  role       = aws_iam_role.lambda_exec_role.name
-  policy_arn = aws_iam_policy.lambda_exec_policy.arn
-  depends_on = [aws_iam_role.lambda_exec_role]
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_policy.arn
+  depends_on = [aws_iam_role.lambda_role]
 }
 
 
