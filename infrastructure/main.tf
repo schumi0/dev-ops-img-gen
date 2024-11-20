@@ -112,7 +112,7 @@ resource "aws_lambda_function" "cara011_img_gen_lambda" {
 
 
 resource "aws_lambda_event_source_mapping" "cara011_sqs_lambda_trigger" {
-  function_name    = aws_lambda_function.cara011_img_gen_lambda.arn
+  function_name    = aws_lambda_function.cara011_img_gen_lambda_function.arn
   event_source_arn = aws_sqs_queue.cara011_img_gen_que.arn
   batch_size       = 10
 }
@@ -138,5 +138,5 @@ output "sqs_que_name" {
 }
 
 output "lambda_function_name" {
-  value = aws_lambda_function.cara011_img_gen_lambda.function_name
+  value = aws_lambda_function.cara011_img_gen_lambda_function.function_name
 }
