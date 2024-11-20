@@ -71,6 +71,11 @@ resource "aws_iam_policy" "lambda_policy" {
         ]
         Resource = "${aws_sqs_queue.imggen_que.arn}"
       },
+        Effect = Allow
+          Action = [
+            "bedrock:InvokeModel"
+          ],
+          Resource = "*"
       {
         Effect = "Allow"
         Action = [
@@ -126,8 +131,6 @@ resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
   policy_arn = aws_iam_policy.lambda_policy.arn
   depends_on = [aws_iam_role.lambda_role]
 }
-
-
 
 # Outputs
 output "sqs_que_name" {
