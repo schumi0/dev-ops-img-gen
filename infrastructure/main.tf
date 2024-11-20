@@ -135,5 +135,5 @@ output "sqs_que_name" {
 }
 
 output "lambda_function_name" {
-  value = aws_lambda_function.image_generator_lambda.function_name
+  value = aws_lambda_function.img_gen_lambda.function_name
 }
