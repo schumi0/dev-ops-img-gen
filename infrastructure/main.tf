@@ -87,8 +87,8 @@ resource "aws_iam_policy" "lambda_policy" {
 
 
 # Lambda Function THIS IS THE ONE
-resource "aws_lambda_function" "image_generator_lambda" {
-  function_name = "imggen_lambda_function"
+resource "aws_lambda_function" "img_gen_lambda" {
+  function_name = "${var.prefix}_imggen_lambda_function"
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda_sqs.lambda_handler"
   runtime       = "python3.9"
@@ -106,7 +106,7 @@ resource "aws_lambda_function" "image_generator_lambda" {
 
 
 resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger" {
-  function_name    = aws_lambda_function.image_generator_lambda.arn
+  function_name    = aws_lambda_function.img_gen_lambda.arn
   event_source_arn = aws_sqs_queue.imggen_que.arn
   batch_size       = 10
 }
