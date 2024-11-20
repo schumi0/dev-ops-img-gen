@@ -40,9 +40,8 @@ resource "aws_iam_role" "lambda_exec_role" {
         Principal = {
           Service = "lambda.amazonaws.com"
         }
+        Action = "sts:AssumeRole"
       }
-      Action = "sts:AssumeRole"
-    }
     ]
   })
   name = "${var.prefix}_lambda_exec_role"
