@@ -36,22 +36,16 @@ resource "aws_iam_role" "lambda_exec_role" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
           Service = "lambda.amazonaws.com"
         }
-      },
-      {
-        Effect  = "Allow",
-        Principal = {
-          Service = "apigateway.amazonaws.com"
-      },
+      }
       Action = "sts:AssumeRole"
     }
     ]
   })
-  name = "${var.prefix}-lambda-exec-role"
+  name = "${var.prefix}_lambda_exec_role"
 }
 
 # IAM Policy for Lambda im cool  very cool
@@ -113,7 +107,7 @@ resource "aws_lambda_function" "image_generator_lambda" {
 }
 
 
-resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger"{
+resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger" {
   function_name    = aws_lambda_function.image_generator_lambda.arn
   event_source_arn = aws_sqs_queue.imggen_que.arn
   batch_size       = 10
