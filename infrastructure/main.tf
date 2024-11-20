@@ -31,7 +31,7 @@ data "aws_s3_bucket" "s3_image_storage" {
 
 # IAM Role for Lambda I hate you
 resource "aws_iam_role" "cara011_lambda_role" {
-  count = var.lambda_role_arn == null ? 1 : 0
+  
   
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
