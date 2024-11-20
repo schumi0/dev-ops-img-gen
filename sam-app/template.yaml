@@ -43,8 +43,6 @@ Resources:
           Properties:
             Path: /generate
             Method: post
-  #Fault is here! Cool change!
-  
 
   CustomResourceGroup:
     Type: AWS::ResourceGroups::Group

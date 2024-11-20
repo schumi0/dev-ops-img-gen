@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   que stuff
+  
 Globals:
   Function:
     Timeout: 80
@@ -9,51 +10,51 @@ Globals:
 
 
 
- Resources:
-    ImageGenQueueFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-          CodeUri: ./
-          Handler: lambda_sqs.lambda_handler
-          Runtime: python3.9
-          Role: !GetAtt LambdaExecutionRole.Arn
-          Environment:
-            Variables:
-              BUCKET_NAME: "pgr301-couch-explorers"
-              MODEL_NAME: "titan-v1"
-              CANDIDATE_NR: "55"
-          Policies:
-            - AWSLambdaBasicExecutionRole
-            - Statement:
-                Effect: Allow
-                Action:
-                  - "s3:PutObject"
-                  - "s3:ListBucket"
-                Resource:
-                  - "arn:aws:s3:::pgr301-couch-explorers/55/*"
-            - Statement:
-                Effect: Allow
-                Action:
-                  - "sqs:ReceiveMessage"
-                  - "sqs:DeleteMessage"
-                  - "sqs:GetQueueAttributes"
-                Resource: !GetAtt ReqSQSImageGen.Arn
-            - Statement:
-                Effect: Allow
-                Action:
-                  - "bedrock:InvokeModel"
-                Resource: "*"
-          Events:
-            SQSQueueEvent:
-              Type: SQS
-              Properties:
-                Queue: !GetAtt ReqSQSImageGen.Arn
-            ApiEvent:
-              Type: Api
-              Properties:
-                Path: /generate-que
-                Method: POST
-    
+Resources:
+  ImageGenQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: lambda_sqs.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          BUCKET_NAME: "pgr301-couch-explorers"
+          MODEL_NAME: "titan-v1"
+          CANDIDATE_NR: "55"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action:
+              - "s3:PutObject"
+              - "s3:ListBucket"
+            Resource:
+              - "arn:aws:s3:::pgr301-couch-explorers/55/*"
+        - Statement:
+            Effect: Allow
+            Action:
+              - "sqs:ReceiveMessage"
+              - "sqs:DeleteMessage"
+              - "sqs:GetQueueAttributes"
+            Resource: !GetAtt ReqSQSImageGen.Arn
+        - Statement:
+            Effect: Allow
+            Action:
+              - "bedrock:InvokeModel"
+            Resource: "*"
+      Events:
+        SQSQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ReqSQSImageGen.Arn
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /generate-que
+            Method: POST
+
     ReqSQSImageGen:
         Type: AWS::SQS::Queue
         Properties:
@@ -62,7 +63,7 @@ Globals:
           VisibilityTimeout: 360
           
     
-  ImageGenQueueFunctionApiGatewayPermission:
+    ImageGenQueueFunctionApiGatewayPermission:
         Type: AWS::Lambda::Permission
         Properties:
           FunctionName: !Ref ImageGenQueueFunction
