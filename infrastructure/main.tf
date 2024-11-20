@@ -54,7 +54,7 @@ resource "aws_iam_role" "lambda_exec_role" {
   name = "${var.prefix}-lambda-exec-role"
 }
 
-# IAM Policy for Lambda im cool 
+# IAM Policy for Lambda im cool  very cool
 resource "aws_iam_policy" "lambda_exec_policy" {
   name = "${var.prefix}_sqs_iam_lambda_policy"
 
