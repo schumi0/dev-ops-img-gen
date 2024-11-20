@@ -17,6 +17,11 @@ terraform {
   }
 }
 
+
+
+variable "prefix" {
+  type = string
+}
 # SQS Queue awesome que
 resource "aws_sqs_queue" "cara011_img_gen_que" {
   name = "titanv1-img-gen-queue"
