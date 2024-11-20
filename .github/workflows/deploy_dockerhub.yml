@@ -3,7 +3,7 @@ name: Publish Docker Image to Docker Hub
 on:
   push:
     branches:
-      - main  # Triggers workflow on pushes to the main branch
+      - main
 
 jobs:
   build-and-push:
@@ -23,7 +23,7 @@ jobs:
           rev=$(git rev-parse --short HEAD)
           docker build -f ./java_sqs_client/Dockerfile . -t cara011_java_sqs_client
           
-          docker tag cara011_java_sqs_client ${{ secrets.DOCKER_USERNAME }}/cara_java_sqs_client:$rev
+          docker tag cara011_java_sqs_client ${{ secrets.DOCKER_USERNAME }}/cara011_java_sqs_client:$rev
           docker push ${{ secrets.DOCKER_USERNAME }}/cara011_java_sqs_client:$rev
           
           docker tag cara011_java_sqs_client ${{ secrets.DOCKER_USERNAME }}/cara011_java_sqs_client:latest
