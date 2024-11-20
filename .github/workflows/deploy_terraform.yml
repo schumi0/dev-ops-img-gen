@@ -29,7 +29,7 @@ jobs:
         aws-region: eu-west-1
     - name: Terraform Init
       run: |
-        terraform init -force-copy
+        terraform init -migrate-state -force-copy
       working-directory: infrastructure/
     - name: Terraform Plan & Apply
       working-directory: infrastructure/
