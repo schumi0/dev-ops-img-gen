@@ -22,8 +22,8 @@ variable "prefix" {
 }
 
 # SQS Queue
-resource "aws_sqs_queue" "cara011_imggen_que" {
-  name = "titanv1-imggen-queue"
+resource "aws_sqs_queue" "cara011_img_gen_que" {
+  name = "titanv1-img-gen-queue"
 }
 
 data "aws_s3_bucket" "s3_image_storage" {
@@ -69,7 +69,7 @@ resource "aws_iam_policy" "cara011_lambda_policy" {
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
         ]
-        Resource = "${aws_sqs_queue.cara011_imggen_que.arn}"
+        Resource = "${aws_sqs_queue.cara011_img_gen_que.arn}"
       },
       {
         Effect = "Allow"
@@ -94,7 +94,7 @@ resource "aws_iam_policy" "cara011_lambda_policy" {
 
 # Lambda Function THIS IS THE ONE
 resource "aws_lambda_function" "img_gen_lambda" {
-  function_name = "${var.prefix}_imggen_lambda_function"
+  function_name = "${var.prefix}_img_gen_lambda_function"
   role          = aws_iam_role.cara011_lambda_role.arn
   handler       = "lambda_sqs.lambda_handler"
   runtime       = "python3.9"
@@ -112,8 +112,8 @@ resource "aws_lambda_function" "img_gen_lambda" {
 
 
 resource "aws_lambda_event_source_mapping" "cara011_sqs_lambda_trigger" {
-  function_name    = aws_lambda_function.img_gen_lambda.arn
-  event_source_arn = aws_sqs_queue.imggen_que.arn
+  function_name    = aws_lambda_function.cara011_img_gen_lambda.arn
+  event_source_arn = aws_sqs_queue.cara011_img_gen_que.arn
   batch_size       = 10
 }
 
@@ -134,7 +134,7 @@ resource "aws_iam_role_policy_attachment" "cara011_lambda_aim_policy_attachment"
 
 # Outputs
 output "sqs_que_name" {
-  value = aws_sqs_queue.cara011_imggen_que.name
+  value = aws_sqs_queue.cara011_im_ggen_que.name
 }
 
 output "lambda_function_name" {
