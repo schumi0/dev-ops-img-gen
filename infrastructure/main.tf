@@ -21,6 +21,11 @@ variable "prefix" {
   type = string
 }
 
+
+data "aws_s3_bucket" "s3_image_storage" {
+  bucket = "pgr301-couch-explorers"
+}
+
 # SQS Queue
 resource "aws_sqs_queue" "imggen_que" {
   name = "${var.prefix}-titanv1-imggen-queue"
@@ -105,7 +110,7 @@ resource "aws_lambda_function" "image_generator_lambda" {
 
   environment {
     variables = {
-      BUCKET_NAME = data.aws_s3_bucket.image_storage.bucket
+      BUCKET_NAME = data.aws_s3_bucket.s3_image_storage.bucket
     }
   }
   depends_on = [aws_iam_role_policy_attachment.lambda_aim_policy_attachment]
@@ -127,5 +132,5 @@ output "sqs_queue_name" {
 }
 
 output "lambda_function_name" {
-  value = aws_lambda_function.image_generate_lambda.function_name
+  value = aws_lambda_function.image_generator_lambda.function_name
 }
