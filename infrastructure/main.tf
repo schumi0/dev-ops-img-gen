@@ -22,7 +22,7 @@ variable "prefix" {
 }
 
 # SQS Queue
-resource "aws_sqs_queue" "imggen_que" {
+resource "aws_sqs_queue" "cara011_imggen_que" {
   name = "titanv1-imggen-queue"
 }
 
@@ -31,7 +31,7 @@ data "aws_s3_bucket" "s3_image_storage" {
 }
 
 # IAM Role for Lambda
-resource "aws_iam_role" "lambda_role" {
+resource "aws_iam_role" "cara011_lambda_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -47,7 +47,7 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 # IAM Policy for Lambda im cool  very cool giga cool suuuuper cool even cooler
-resource "aws_iam_policy" "lambda_policy" {
+resource "aws_iam_policy" "cara011_lambda_policy" {
   name = "sqs_iam_lambda_policy"
 
   policy = jsonencode({
@@ -112,7 +112,7 @@ resource "aws_lambda_function" "img_gen_lambda" {
 }
 
 
-resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger" {
+resource "aws_lambda_event_source_mapping" "cara011_sqs_lambda_trigger" {
   function_name    = aws_lambda_function.img_gen_lambda.arn
   event_source_arn = aws_sqs_queue.imggen_que.arn
   batch_size       = 10
@@ -126,9 +126,8 @@ data "archive_file" "lambda_zip" {
 }
 
 
-
 # Attach IAM Policy to Role
-resource "aws_iam_role_policy_attachment" "lambda_aim_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "cara011_lambda_aim_policy_attachment" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_policy.arn
   depends_on = [aws_iam_role.lambda_role]
