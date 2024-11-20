@@ -4,14 +4,15 @@ on:
   push:
     branches:
       - main
-      - staging
+      - "*"
 
 jobs:
-  my-job:
-  
+  terraform:
     name: App Deploy on Push
     
     runs-on: ubuntu-latest #Amazon runs on linux right?!?!
+    env:
+      AWS_REGION: eu-west-1
     steps:
       - name: checkout commit
         uses: actions/checkout@v3
