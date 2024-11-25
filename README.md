@@ -49,15 +49,12 @@ Docker container image:
 
 ----------- 4 -----------
 
-4)
 Address for config of alarm can be changed in config file for tf (terraform.tfvars)
 Cloudwatch Alarm:
 (cara011_last_message_que_alarm)
 
-
 ----------- 5 -----------
 
-5)
 A serverless architecture using AWS Lambda and tools like Amazon SQS works quite differently from a microservices approach, especially when it comes to automation, monitoring, scalability, and team responsibilities. Serverless makes managing infrastructure much simpler, but it  complicates Continuous Integration/Continuous Delivery (CI/CD) pipelines. Each small, independent function usually needs its own pipeline, which lets you roll out updates quickly but adds complexity as systems grow. Microservices, on the other hand, group more functionality into fewer services. This simplifies pipeline management but requires more effort to handle environments and infrastructure. 
   Monitoring and observability are trickier in a Function-as-a-Service (FaaS) setup. Serverless workflows often have many small, independent steps that can fail unexpectedly, and because these functions only run briefly, you don’t get much feedback beyond the  response from the endpoint you’re calling. Without persistent processes or "safety rails," debugging and tracing issues in serverless systems can feel like solving a puzzle with missing pieces. Microservices, with their longer-running components, provide more stability and make it easier to trace errors, like AWS Lambda functions, where you get a response based on the servers' response and no specified error log to help you out.  Unless you put it in yourself, that is. I'd argue that fixing errors localy will most likely always be easier than searching through an entire tech stack to find a specific case issue. 
   Scalability and cost control vary, too. Serverless scales automatically to match demand, and you only pay for what you use, which is perfect for workloads that spike or fluctuate. But if you have constant high usage, serverless can get expensive. Microservices also scale but require manual setup and run constantly, so you’re dealing with fixed costs. For steady workloads, this can be cheaper, depending on the specifics. In short, serverless gives you flexibility, while microservices offer more predictable costs.
